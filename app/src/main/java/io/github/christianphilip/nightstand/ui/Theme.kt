@@ -72,6 +72,14 @@ object NightstandIcons {
         "M3.5 4h9a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-9a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2zM16.5 7v2M8.5 5.5L6.5 8.5h3l-2 3",
         viewport = 18f,
     )
+    val Moon: ImageVector = strokeIcon(
+        "moon",
+        "M13.5 9.6A5.6 5.6 0 0 1 6.4 2.5a5.7 5.7 0 1 0 7.1 7.1z",
+    )
+    val Settings: ImageVector = strokeIcon(
+        "settings",
+        "M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 2.5v1.5M8 12v1.5M2.5 8H4M12 8h1.5M4.1 4.1l1.1 1.1M10.8 10.8l1.1 1.1M4.1 11.9l1.1-1.1M10.8 5.2l1.1-1.1",
+    )
     val PopupsOff: ImageVector = strokeIcon(
         "popups_off",
         "M4 11V7a4 4 0 0 1 6.5-3.1M12 7v4l1 1H5M6.5 14h3M2 2l12 12",

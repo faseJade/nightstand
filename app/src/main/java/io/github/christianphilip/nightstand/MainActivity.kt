@@ -27,6 +27,7 @@ import io.github.christianphilip.nightstand.focus.FocusController
 import io.github.christianphilip.nightstand.notifications.NightstandListenerService
 import io.github.christianphilip.nightstand.notifications.NotificationHub
 import io.github.christianphilip.nightstand.notifications.NotificationItem
+import io.github.christianphilip.nightstand.system.NightMode
 import io.github.christianphilip.nightstand.ui.NightstandScreen
 import io.github.christianphilip.nightstand.ui.NightstandTheme
 import io.github.christianphilip.nightstand.ui.SetupScreen
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
     private var silencingAllowed by mutableStateOf(false)
     private var skipSilencing by mutableStateOf(false)
     private var popupsOff by mutableStateOf(false)
+    private var nightMode by mutableStateOf(NightMode.AUTO)
 
     private val prefs by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
@@ -46,12 +48,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        NotificationHub.init(applicationContext)
         focus = FocusController(applicationContext)
         if (savedInstanceState == null) {
             // Clean up if a previous session ended without switching silencing off.
             focus.restore()
         }
         skipSilencing = prefs.getBoolean(KEY_SKIP_SILENCING, false)
+        nightMode = runCatching {
+            NightMode.valueOf(prefs.getString(KEY_NIGHT_MODE, null) ?: NightMode.AUTO.name)
+        }.getOrDefault(NightMode.AUTO)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setShowWhenLocked(true)
@@ -64,6 +70,11 @@ class MainActivity : ComponentActivity() {
                 if (listenerEnabled && (silencingAllowed || skipSilencing)) {
                     NightstandScreen(
                         popupsOff = popupsOff,
+                        nightMode = nightMode,
+                        onCycleNightMode = {
+                            nightMode = nightMode.next()
+                            prefs.edit().putString(KEY_NIGHT_MODE, nightMode.name).apply()
+                        },
                         onOpen = ::openNotification,
                         onExit = ::finish,
                     )
@@ -177,5 +188,6 @@ class MainActivity : ComponentActivity() {
 
     private companion object {
         const val KEY_SKIP_SILENCING = "skip_silencing"
+        const val KEY_NIGHT_MODE = "night_mode"
     }
 }

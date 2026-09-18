@@ -4,7 +4,11 @@ import android.text.format.DateFormat
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -27,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.christianphilip.nightstand.system.BatteryInfo
+import io.github.christianphilip.nightstand.system.NightMode
 import io.github.christianphilip.nightstand.system.rememberBatteryInfo
 import io.github.christianphilip.nightstand.system.rememberNextAlarm
 import java.time.LocalDateTime
@@ -35,7 +42,14 @@ import java.util.Locale
 
 /** Left half: exit button, big digital clock, weekday, date + month, alarm and battery. */
 @Composable
-fun ClockPanel(now: LocalDateTime, onExit: () -> Unit, modifier: Modifier = Modifier) {
+fun ClockPanel(
+    now: LocalDateTime,
+    nightMode: NightMode,
+    onCycleNightMode: () -> Unit,
+    onExit: () -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val is24h = DateFormat.is24HourFormat(context)
     val locale = Locale.getDefault()
@@ -74,7 +88,22 @@ fun ClockPanel(now: LocalDateTime, onExit: () -> Unit, modifier: Modifier = Modi
     )
 
     Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
-        HoldToExitButton(onExit = onExit)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            HoldToExitButton(onExit = onExit)
+            GhostButton(
+                icon = NightstandIcons.Moon,
+                text = nightMode.label,
+                onClick = onCycleNightMode,
+            )
+            GhostIconButton(
+                icon = NightstandIcons.Settings,
+                contentDescription = "Choose which apps appear",
+                onClick = onOpenSettings,
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -120,6 +149,43 @@ fun ClockPanel(now: LocalDateTime, onExit: () -> Unit, modifier: Modifier = Modi
 
         // Balances the exit button so the clock sits in the visual middle.
         Spacer(Modifier.height(40.dp))
+    }
+}
+
+/** Small outlined button matching the hold-to-exit control. */
+@Composable
+private fun GhostButton(icon: ImageVector, text: String, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(20.dp)
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .clip(shape)
+            .background(Palette.Ground)
+            .border(1.dp, Palette.Border, shape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(icon, contentDescription = null, tint = Palette.Subtle, modifier = Modifier.size(14.dp))
+        Text(text, color = Palette.Subtle, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+    }
+}
+
+/** Icon-only version of [GhostButton], for controls that need no label. */
+@Composable
+private fun GhostIconButton(icon: ImageVector, contentDescription: String, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(20.dp)
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(shape)
+            .background(Palette.Ground)
+            .border(1.dp, Palette.Border, shape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(icon, contentDescription = contentDescription, tint = Palette.Subtle, modifier = Modifier.size(16.dp))
     }
 }
 
