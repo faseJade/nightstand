@@ -1,0 +1,13 @@
+Turn your phone on its side and Nightstand shows a large clock on the left and all of your notifications on the right.
+
+<b>Features</b>
+<ul>
+<li>Big digital clock with weekday, date, next alarm and battery level</li>
+<li>Scrollable list of your notifications: tap to open, swipe to dismiss, or clear all</li>
+<li>While Nightstand is open, notifications stop popping up and stay in the list. Alarms, calls and music still come through</li>
+<li>Always opens in landscape and stays there until you close it</li>
+<li>Keeps the screen on, and nudges the clock to protect against burn-in</li>
+<li>Press and hold to exit, so a bump won't close it</li>
+</ul>
+
+No ads, no tracking, no internet permission.
