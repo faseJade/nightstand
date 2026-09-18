@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +38,11 @@ fun NightstandScreen(
     onExit: () -> Unit,
 ) {
     val notifications by NotificationHub.items.collectAsStateWithLifecycle()
+    val seenApps by NotificationHub.seenApps.collectAsStateWithLifecycle()
+    val hiddenPackages by NotificationHub.hiddenPackages.collectAsStateWithLifecycle()
+
+    var showSettings by remember { mutableStateOf(false) }
+
     val now by rememberNow()
     val nowMillis = remember(now.minute, notifications) { System.currentTimeMillis() }
 
@@ -51,6 +58,7 @@ fun NightstandScreen(
         ClockPanel(
             now = now,
             onExit = onExit,
+            onOpenSettings = { showSettings = true },
             modifier = Modifier
                 .weight(0.45f)
                 .fillMaxHeight(),
@@ -65,6 +73,17 @@ fun NightstandScreen(
             modifier = Modifier
                 .weight(0.55f)
                 .fillMaxHeight(),
+        )
+    }
+
+    if (showSettings) {
+        AppSettingsDialog(
+            seenApps = seenApps,
+            hiddenPackages = hiddenPackages,
+            onToggleApp = { packageName, hidden ->
+                NotificationHub.setAppHidden(packageName, hidden)
+            },
+            onDismiss = { showSettings = false },
         )
     }
 }
