@@ -30,6 +30,82 @@ class NotificationHubTest {
     }
 
     @Test
+    fun `seenApps tracks published notification apps in alphabetical order`() {
+        val item1 = NotificationItem(
+            key = "k1",
+            packageName = "com.b.app",
+            appName = "B App",
+            appIcon = null,
+            title = "T1",
+            text = "Txt1",
+            postTime = 100L,
+            contentIntent = null,
+            clearable = true,
+            autoCancel = true
+        )
+        val item2 = NotificationItem(
+            key = "k2",
+            packageName = "com.a.app",
+            appName = "A App",
+            appIcon = null,
+            title = "T2",
+            text = "Txt2",
+            postTime = 200L,
+            contentIntent = null,
+            clearable = true,
+            autoCancel = true
+        )
+        NotificationHub.publish(listOf(item1, item2))
+
+        val seen = NotificationHub.seenApps.value
+        assertEquals(2, seen.size)
+        assertEquals("com.a.app", seen[0].packageName)
+        assertEquals("A App", seen[0].appName)
+        assertEquals("com.b.app", seen[1].packageName)
+        assertEquals("B App", seen[1].appName)
+    }
+
+    @Test
+    fun `filtering app hides its notifications immediately`() {
+        val item1 = NotificationItem(
+            key = "k1",
+            packageName = "com.app.one",
+            appName = "App One",
+            appIcon = null,
+            title = "T1",
+            text = "Txt1",
+            postTime = 100L,
+            contentIntent = null,
+            clearable = true,
+            autoCancel = true
+        )
+        val item2 = NotificationItem(
+            key = "k2",
+            packageName = "com.app.two",
+            appName = "App Two",
+            appIcon = null,
+            title = "T2",
+            text = "Txt2",
+            postTime = 200L,
+            contentIntent = null,
+            clearable = true,
+            autoCancel = true
+        )
+        NotificationHub.publish(listOf(item1, item2))
+
+        assertEquals(2, NotificationHub.items.value.size)
+
+        NotificationHub.setAppHidden("com.app.one", true)
+
+        assertEquals(1, NotificationHub.items.value.size)
+        assertEquals("k2", NotificationHub.items.value[0].key)
+
+        NotificationHub.setAppHidden("com.app.one", false)
+
+        assertEquals(2, NotificationHub.items.value.size)
+    }
+
+    @Test
     fun `publish updates items`() {
         val list = listOf(createItem("k1", true))
         NotificationHub.publish(list)

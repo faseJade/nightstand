@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        NotificationHub.init(applicationContext)
         focus = FocusController(applicationContext)
         if (savedInstanceState == null) {
             // Clean up if a previous session ended without switching silencing off.

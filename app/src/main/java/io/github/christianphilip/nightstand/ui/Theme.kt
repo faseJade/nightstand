@@ -76,6 +76,10 @@ object NightstandIcons {
         "popups_off",
         "M4 11V7a4 4 0 0 1 6.5-3.1M12 7v4l1 1H5M6.5 14h3M2 2l12 12",
     )
+    val Settings: ImageVector = strokeIcon(
+        "settings",
+        "M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 2.5v1.5M8 12v1.5M2.5 8H4M12 8h1.5M4.1 4.1l1.1 1.1M10.8 10.8l1.1 1.1M4.1 11.9l1.1-1.1M10.8 5.2l1.1-1.1",
+    )
 
     private fun strokeIcon(
         name: String,

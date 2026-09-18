@@ -33,9 +33,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/** Left half: exit button, big digital clock, weekday, date + month, alarm and battery. */
+/** Left half: exit button, settings button, big digital clock, weekday, date + month, alarm and battery. */
 @Composable
-fun ClockPanel(now: LocalDateTime, onExit: () -> Unit, modifier: Modifier = Modifier) {
+fun ClockPanel(
+    now: LocalDateTime,
+    onExit: () -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val is24h = DateFormat.is24HourFormat(context)
     val locale = Locale.getDefault()
@@ -74,7 +79,17 @@ fun ClockPanel(now: LocalDateTime, onExit: () -> Unit, modifier: Modifier = Modi
     )
 
     Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
-        HoldToExitButton(onExit = onExit)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            HoldToExitButton(onExit = onExit)
+            GhostButton(
+                icon = NightstandIcons.Settings,
+                contentDescription = "Notification Settings",
+                onClick = onOpenSettings,
+            )
+        }
 
         Column(
             modifier = Modifier
